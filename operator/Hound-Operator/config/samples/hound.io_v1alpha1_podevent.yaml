@@ -1,0 +1,6 @@
+apiVersion: hound.io/v1alpha1
+kind: PodEvent
+metadata:
+  name: podevent-sample
+spec:
+  # TODO(user): Add fields here

@@ -1,0 +1,14 @@
+layout:
+- go.kubebuilder.io/v3
+projectName: hound-operator
+repo: hound-operator
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  group: hound.io
+  kind: PodEvent
+  path: hound-operator/api/v1alpha1
+  version: v1alpha1
+version: "3"

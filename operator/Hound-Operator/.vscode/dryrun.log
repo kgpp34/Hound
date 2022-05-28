@@ -1,0 +1,10 @@
+make: Entering directory '/home/ylh/桌面/Hound-Operator'
+ 
+mkdir -p /home/ylh/桌面/Hound-Operator/bin
+GOBIN=/home/ylh/桌面/Hound-Operator/bin go install sigs.k8s.io/controller-tools/cmd/controller-gen@v0.8.0
+/home/ylh/桌面/Hound-Operator/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
+go fmt ./...
+go vet ./...
+go build -o bin/manager main.go
+make: Leaving directory '/home/ylh/桌面/Hound-Operator'
+ 

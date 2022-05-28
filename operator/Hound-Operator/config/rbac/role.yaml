@@ -1,0 +1,33 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - hound.io
+  resources:
+  - podevents
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - hound.io
+  resources:
+  - podevents/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - hound.io
+  resources:
+  - podevents/status
+  verbs:
+  - get
+  - patch
+  - update
