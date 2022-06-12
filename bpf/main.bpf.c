@@ -6,16 +6,26 @@
 #include "common.h"
 
 /* BPF ringbuf map */
-struct {
-    __uint(type, BPF_MAP_TYPE_RINGBUF);
-    __uint(max_entries, 256 * 1024 /* 256 KB */);
+struct
+{
+	__uint(type, BPF_MAP_TYPE_RINGBUF);
+	__uint(max_entries, 256 * 1024 /* 256 KB */);
 } events SEC(".maps");
 
-struct {
+struct
+{
+	__uint(type, BPF_MAP_TYPE_HASH);
+	__type(key, u32);
+	__type(value, struct u32);
+	__uint(max_entries, 1024 * 16);
+} pid_map SEC(".maps");
+
+struct
+{
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__type(key, u32);
 	__type(value, struct sock *);
-	__uint(max_entries, 1024);   
+	__uint(max_entries, 1024);
 } current_sock SEC(".maps");
 
 SEC("kprobe/tcp_v4_connect")
@@ -29,27 +39,27 @@ int kprobe__tcp_v4_connect(struct pt_regs *ctx)
 };
 
 SEC("kretprobe/tcp_v4_connect")
-int kretprobe__tcp_v4_connect(struct pt_regs *ctx) 
+int kretprobe__tcp_v4_connect(struct pt_regs *ctx)
 {
 	int ret = PT_REGS_RC(ctx);
 	u32 pid = bpf_get_current_pid_tgid() >> 32;
 
-	struct sock *skpp; 
+	struct sock *skpp;
 	skpp = bpf_map_lookup_elem(&current_sock, &pid);
-	if (skpp == 0) 
+	if (skpp == 0)
 	{
 		return 0;
 	}
 
-	if (ret != 0) 
+	if (ret != 0)
 	{
 		bpf_map_delete_elem(&current_sock, &pid);
 		return 0;
 	}
 
-
 	struct sock *skp = skpp;
-	if (skp == 0){
+	if (skp == 0)
+	{
 		return 0;
 	}
 	u32 saddr = skp->__sk_common.skc_rcv_saddr;
@@ -70,7 +80,8 @@ int kretprobe__tcp_v4_connect(struct pt_regs *ctx)
 	//
 	struct event_t *event;
 	event = bpf_ringbuf_reserve(&events, sizeof(*event), 0);
-	if (!event) {
+	if (!event)
+	{
 		return 0;
 	}
 

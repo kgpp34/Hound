@@ -74,7 +74,7 @@ func Long2IPString(i uint) (string, error) {
 }
 
 func main() {
-	bpfModule, err := bpf.NewModuleFromFile("main.bpf.o")
+	bpfModule, err := bpf.NewModuleFromFile("./bpf/main.bpf.o")
 	if err != nil {
 		panic(err)
 	}
@@ -108,6 +108,11 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("attach tcp_v4_connect() kretprobe success")
+
+	_, err := bpfModule.GetMap("pid_map")
+	if err != nil {
+		panic(err)
+	}
 
 	eventsChannel := make(chan []byte)
 	pb, err := bpfModule.InitRingBuf("events", eventsChannel)
